@@ -44,6 +44,7 @@
   #nav button:hover { background:#5d5048; }
   #nav button.primary.has { background:var(--acc); }
   #nav #memoBtn { background:var(--cream); color:var(--ink); }
+  #nav #bmiBtn.on { background:#2563EB; color:#fff; }
   #nav #memoBtn:hover { background:#fff; }
   #nav button:disabled { opacity:.35; cursor:default; }
   #count { font-family:'JetBrains Mono', monospace; font-size:14px; min-width:70px; text-align:center; }
@@ -170,7 +171,7 @@
 <div class="frame" data-id="end"><section class="slide" id="s-end" data-transition="fade" style="background:#C23B22;color:#FBF6EE;font-family:'Noto Sans JP', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:32px"><h1 style="font-family:'M PLUS Rounded 1c', 'Noto Sans JP', Arial, sans-serif;font-size:104px;font-weight:800;line-height:1.15;color:#FBF6EE">おつかれさまでした</h1><p style="font-size:36px;line-height:1.6;color:#FBF6EE">次は、何も見ずにBMI計算ツールを書いてみよう。<br>動かないとき：Console のエラーを読む → console.log で値を確認 → 10分悩んだら質問</p></section></div>
   </div>
     <div id="bmiDock">
-      <div class="bh" id="bmiHead"><b>BMI計算ツール（動かせます）</b><span id="bmiToggle">ー 小さく</span></div>
+      <div class="bh" id="bmiHead"><b>BMI計算ツール（動かせます）</b><span id="bmiToggle">× 閉じる</span></div>
       <div class="bb">
         <label>身長 (cm)</label><input id="bdH" type="number" placeholder="例：170">
         <label>体重 (kg)</label><input id="bdW" type="number" placeholder="例：65">
@@ -212,6 +213,7 @@
     <span id="count"></span>
     <button id="next" aria-label="次へ">→</button>
     <span id="sec"></span>
+    <button id="bmiBtn">BMIツール</button>
     <button id="memoBtn">メモ</button>
     <button id="pgBtn" class="primary">やってみる</button>
   </nav>
@@ -259,7 +261,7 @@ const DATA = {"bmi": ["fullfile", "overview", "sec5", "design", "calc", "judge",
     if (push !== false) { try { history.replaceState(null, '', '#slide-' + (cur + 1)); } catch (e) {} }
     loadEx();
     if (document.body.classList.contains('memo-on')) loadMemo();
-    document.body.classList.toggle('bmi-on', DATA.bmi.includes(DATA.ids[cur]));
+    applyDock();
     fit();
   }
   document.getElementById('prev').onclick = () => go(cur - 1);
@@ -284,12 +286,16 @@ const DATA = {"bmi": ["fullfile", "overview", "sec5", "design", "calc", "judge",
   window.addEventListener('hashchange', fromHash);
 
   // ---------- BMI dock ----------
-  document.getElementById('bmiHead').onclick = () => {
-    const d = document.getElementById('bmiDock');
-    d.classList.toggle('min');
-    document.getElementById('bmiToggle').textContent = d.classList.contains('min') ? '＋ 開く' : 'ー 小さく';
-    fit();
-  };
+  function dockPref() { return store.get('bmiDock'); }  // 'on' | 'off' | null(自動)
+  function applyDock() {
+    const p = dockPref();
+    const show = p === 'on' ? true : p === 'off' ? false : DATA.bmi.includes(DATA.ids[cur]);
+    document.body.classList.toggle('bmi-on', show);
+    document.getElementById('bmiBtn').classList.toggle('on', show);
+  }
+  function setDock(show) { store.set('bmiDock', show ? 'on' : 'off'); applyDock(); fit(); }
+  document.getElementById('bmiHead').onclick = () => setDock(false);
+  document.getElementById('bmiBtn').onclick = () => setDock(!document.body.classList.contains('bmi-on'));
   function calcDock() {
     const height = Number(document.getElementById('bdH').value);
     const weight = Number(document.getElementById('bdW').value);
