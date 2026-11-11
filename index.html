@@ -44,9 +44,7 @@
   #nav { grid-column:1 / -1; grid-row:2; display:flex; align-items:center; gap:10px; padding:0 14px; background:var(--ink); color:var(--cream); }
   #nav button { font:inherit; font-size:14px; font-weight:700; border:0; border-radius:8px; padding:8px 14px; cursor:pointer; background:#4A3F38; color:var(--cream); }
   #nav button:hover { background:#5d5048; }
-  #nav button.primary.has { background:var(--acc); animation: glow 1.6s ease-in-out infinite; }
-  @keyframes glow { 0%,100% { box-shadow:0 0 0 0 rgba(255,184,107,.0), 0 0 6px 1px rgba(255,184,107,.5); } 50% { box-shadow:0 0 0 4px rgba(255,184,107,.55), 0 0 18px 4px rgba(255,184,107,.7); } }
-  @media (prefers-reduced-motion: reduce) { #nav button.primary.has { animation:none; box-shadow:0 0 0 3px #FFB86B; } }
+  #nav button.primary.has { background:var(--acc); }
   #nav button:disabled { opacity:.35; cursor:default; }
   #count { font-family:'JetBrains Mono', monospace; font-size:14px; min-width:70px; text-align:center; }
   #sec { font-size:13px; opacity:.8; flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
@@ -159,7 +157,6 @@
     <div id="memo">
       <div class="mh"><b id="memoTitle">メモ</b><button id="memoAllBtn">すべてのメモ</button><button id="memoClose">閉じる</button></div>
       <textarea id="memoText" placeholder="このスライドについて自由にメモできます（自動で保存されます）"></textarea>
-      <p id="memoHint"></p>
       <div class="mf"><span id="memoState">このブラウザに自動保存されます</span><button id="memoClear">このメモを消す</button></div>
     </div>
     <div id="memoAll">
@@ -265,8 +262,6 @@ const DATA = {"ex": {"script": {"task": "console.log を使って「JavaScript �
   function loadMemo() {
     document.getElementById('memoTitle').textContent = (cur + 1) + '. ' + (DATA.stitles[cur] || 'メモ');
     memoText.value = store.get(memoKey(cur)) || '';
-    const n = DATA.notes[cur] || '';
-    document.getElementById('memoHint').textContent = n ? '補足：' + n : '';
     memoState.textContent = 'このブラウザに自動保存されます';
   }
   memoText.addEventListener('input', () => {
